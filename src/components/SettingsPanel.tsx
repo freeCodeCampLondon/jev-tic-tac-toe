@@ -11,6 +11,9 @@ export default function SettingsPanel({ settings, onChange }: Props) {
   const [showKey, setShowKey] = useState(false);
   const problems = endpointProblems(settings);
   const local = settings.local;
+  // Match the preset by endpoint (not by stored name) so browsers that saved
+  // settings under an older preset label still show the right option selected.
+  const activePreset = LOCAL_PRESETS.find((p) => p.baseUrl === local.baseUrl && p.apiPath === local.apiPath);
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-zinc-800 bg-zinc-900/60 p-3">
@@ -44,7 +47,7 @@ export default function SettingsPanel({ settings, onChange }: Props) {
           <label className="flex flex-col gap-1">
             <span className="text-xs font-medium text-zinc-400">Preset</span>
             <select
-              value={LOCAL_PRESETS.some((p) => p.name === local.presetName && p.baseUrl === local.baseUrl) ? local.presetName : "custom"}
+              value={activePreset ? activePreset.name : "custom"}
               onChange={(e) => {
                 const p = LOCAL_PRESETS.find((x) => x.name === e.target.value);
                 if (p) onChange({ ...settings, local: { ...local, baseUrl: p.baseUrl, apiPath: p.apiPath, modelId: p.modelId, presetName: p.name } });
@@ -109,12 +112,14 @@ export default function SettingsPanel({ settings, onChange }: Props) {
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-zinc-400">Model id</span>
+            <span className="text-xs font-medium text-zinc-400">
+              Model id <span className="font-normal text-zinc-600">(e.g. nimble, clef)</span>
+            </span>
             <input
               type="text"
               value={local.modelId}
               onChange={(e) => onChange({ ...settings, local: { ...local, modelId: e.target.value } })}
-              placeholder="nimble"
+              placeholder="e.g. nimble, clef"
               className="rounded-md border border-zinc-700 bg-zinc-950 px-2 py-1.5 font-mono text-sm text-zinc-200 outline-none focus:border-sky-600"
             />
           </label>

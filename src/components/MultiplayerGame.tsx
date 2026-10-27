@@ -125,6 +125,10 @@ export default function MultiplayerGame({ settings }: Props) {
 
   // ---- Jev (each player's own endpoint — classroom proxy or local model) -----
   const role: Role = session?.role ?? "X";
+  // What we call the model this player is asking: "Jev" when it goes through
+  // the classroom proxy, "AI" when it's their own locally hosted model (which
+  // may not be Jev at all).
+  const modelName = settings.useLocal ? "AI" : "Jev";
   const draftBoard = stateCheck.board ?? snapshot?.board ?? null;
   const { result, running, runRequest, clearResult, endpoint, epProblems } = useJevRun({
     stateText,
@@ -247,7 +251,7 @@ export default function MultiplayerGame({ settings }: Props) {
     if (snapshot.status !== "playing" || snapshot.turn !== role) return; // not your turn
     const applied = applyJevChoice(draftBoard, role, ans.choice);
     if (!applied.board) {
-      setNotice(applied.error ?? "Could not apply Jev's move");
+      setNotice(applied.error ?? `Could not apply ${modelName}'s move`);
       return;
     }
     setStateText(boardToJson(applied.board)); // show the move in the editor immediately
@@ -292,8 +296,8 @@ export default function MultiplayerGame({ settings }: Props) {
         <div className="w-full max-w-2xl">
           <h2 className="text-lg font-bold text-zinc-100">Two-player match</h2>
           <p className="mt-1 text-sm leading-relaxed text-zinc-500">
-            The server hosts only the board state. Each player uses their own Jev endpoint (classroom proxy or a local
-            model) to decide moves — just like solo mode, but with an opponent.
+            The server hosts only the board state. Each player uses their own model (the classroom Jev proxy or a
+            locally hosted one) to decide moves — just like solo mode, but with an opponent.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <section className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-5">
@@ -365,7 +369,7 @@ export default function MultiplayerGame({ settings }: Props) {
         />
         <JsonEditor
           title="Questions"
-          subtitle={`your typed question for Jev (you play ${role})`}
+          subtitle={`your typed question for ${settings.useLocal ? "your model" : "Jev"} (you play ${role})`}
           value={instructionText}
           onChange={setInstructionText}
           issues={instructionIssues}
@@ -397,7 +401,7 @@ export default function MultiplayerGame({ settings }: Props) {
                 <span className="rounded-full bg-zinc-700/40 px-3 py-1 font-semibold text-zinc-300">Draw</span>
               ) : isMyTurn ? (
                 <span className="rounded-full bg-sky-950/60 px-3 py-1 font-medium text-sky-300">
-                  Your turn — send your own move from the State JSON, or apply Jev's
+                  Your turn — send your own move from the State JSON, or apply {modelName}'s
                 </span>
               ) : (
                 <span className="rounded-full bg-zinc-800 px-3 py-1 font-medium text-zinc-400">
@@ -428,7 +432,7 @@ export default function MultiplayerGame({ settings }: Props) {
             disabled={running || stateCheck.issues.length > 0 || instructionIssues.length > 0 || epProblems.length > 0}
             className="rounded-md bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {running ? "Asking Jev…" : "Run request  ⌘⏎"}
+            {running ? `Asking ${modelName}…` : "Run request  ⌘⏎"}
           </button>
           <button
             type="button"
@@ -436,7 +440,7 @@ export default function MultiplayerGame({ settings }: Props) {
             disabled={!answer || !draftBoard || !isMyTurn || sending}
             className="rounded-md border border-amber-600/70 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {sending ? "Sending…" : `Apply Jev's move & send (${role})`}
+            {sending ? "Sending…" : `Apply ${modelName}'s move & send (${role})`}
           </button>
           <button
             type="button"
@@ -472,10 +476,10 @@ export default function MultiplayerGame({ settings }: Props) {
           )}
         </div>
 
-        {/* response panel — this player's own Jev only */}
+        {/* response panel — this player's own model (Jev or local) only */}
         <section className="flex min-h-[260px] flex-1 flex-col rounded-lg border border-zinc-800 bg-zinc-900/60">
           <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-1.5">
-            <span className="text-sm font-semibold text-zinc-200">Your Jev response</span>
+            <span className="text-sm font-semibold text-zinc-200">Your {modelName} response</span>
             {answer && (
               <span className="font-mono text-xs text-zinc-500">
                 choice: <span className="text-amber-300">{answer.choice}</span>
@@ -485,8 +489,9 @@ export default function MultiplayerGame({ settings }: Props) {
           <div className="thin-scroll flex-1 overflow-auto p-3">
             {!result && (
               <p className="m-auto max-w-sm text-center text-xs leading-relaxed text-zinc-500">
-                Press <span className="font-semibold text-zinc-300">Run request</span> to ask your own Jev endpoint about
-                the current board. Only you see this panel — your opponent sees theirs.
+                Press <span className="font-semibold text-zinc-300">Run request</span> to ask your own{" "}
+                {settings.useLocal ? "model" : "Jev"} endpoint about the current board. Only you see this panel — your
+                opponent sees theirs.
               </p>
             )}
 

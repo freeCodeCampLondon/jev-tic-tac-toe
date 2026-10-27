@@ -48,7 +48,7 @@ export const DEFAULT_LOCAL: LocalEndpointSettings = {
   apiPath: "/systemone",
   apiKey: "",
   modelId: "nimble",
-  presetName: "Ollama — nimble (local decision model)",
+  presetName: "Ollama (local decision model)",
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -68,7 +68,7 @@ export interface Preset {
  *  /v1/systemone with the same {model, state, questions} shape as OpenRouter. */
 export const LOCAL_PRESETS: Preset[] = [
   {
-    name: "Ollama — nimble (local decision model)",
+    name: "Ollama (local decision model)",
     baseUrl: "http://localhost:11434/v1",
     apiPath: "/systemone",
     modelId: "nimble",
