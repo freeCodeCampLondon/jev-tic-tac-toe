@@ -1,0 +1,17 @@
+# dependencies
+node_modules
+
+# build artifacts & caches — regenerable via `npm run build`; never commit,
+# since stale bundles can contain secrets that were later removed from source
+dist
+*.tsbuildinfo
+node_modules/.vite
+
+# OS noise
+.DS_Store
+
+# environment files — real keys stay local, only the example is committed
+.env
+.env.*
+!.env.example
+*.local

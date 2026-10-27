@@ -1,0 +1,18 @@
+
+{
+  "game": {
+    "type": "choice",
+    "instructions": "This is a tic-tac-toe game. The state shows the current board; '.' means an empty cell. You are playing as O. X moves first in a new game, so you (O) move second. You can only place your piece on an empty cell. What is your next move in order to win? To avoid losing, it's a good idea to block your opponent from winning.",
+    "criteria": {
+      "c1-r1": "top-left",
+      "c2-r1": "top-mid",
+      "c3-r1": "top-right",
+      "c1-r2": "center-left",
+      "c2-r2": "center-mid",
+      "c3-r2": "center-right",
+      "c1-r3": "bottom-left",
+      "c2-r3": "bottom-mid",
+      "c3-r3": "bottom-right"
+    }
+  }
+}
